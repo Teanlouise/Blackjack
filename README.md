@@ -1,4 +1,6 @@
-![blackjack](https://user-images.githubusercontent.com/19520346/71759847-58d34380-2eff-11ea-8ac5-f833cc0d988c.PNG)
+[Back to Home](https://teanlouise.github.io)
+
+![blackjack_title](https://user-images.githubusercontent.com/19520346/71759847-58d34380-2eff-11ea-8ac5-f833cc0d988c.PNG)
 
 A simple blackjack game. This was completed as the milestone 2 project for Jose Portilla's "Zero-to-Hero Python" course. Basic Python functionality inlcuding Object-Oriented programming practices were used to implement this project.
 
