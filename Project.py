@@ -6,28 +6,31 @@ Classes:
 - Human Player
 - 52 cards
 - Bank roll
+- Game
+- Round
 
 Gameplay:
-1. Create a deck of 52 cards
-2. Shuffle the deck
-3. Ask the Player for their bet
+1. Create a bank roll according to user to be used for all subsequent games
+2. Start the first round
+3. Ask the player for their bet for this round
 4. Make sure that the Player's bet does not exceed their available chips
-5. Deal two cards to the Dealer and two cards to the Player
-6. Show only one of the Dealer's cards, the other remains hidden
-7. Show both of the Player's cards
-8. Ask the Player if they wish to Hit, and take another card
-9. If the Player's hand doesn't Bust (go over 21), ask if they'd like to Hit again.
-10. If a Player Stands, play the Dealer's hand. The dealer will always Hit until the Dealer's value meets or exceeds 17
-11. Determine the winner and adjust the Player's chips accordingly
-12. Ask the Player if they'd like to play again
-
-
+5. Create a deck of 52 cards and shuffle
+6. Deal two cards to the Dealer and two cards to the Player
+7. Show only one of the Dealer's cards, the other remains hidden
+8. Show both of the Player's cards
+9. Ask the Player if they wish to Hit, and take another card
+10. If the Player's hand doesn't Bust (go over 21), ask if they'd like to Hit again.
+11. If a Player Stands, play the Dealer's hand.
+12. The dealer will always Hit until the Dealer's value meets or exceeds 17
+13. Determine the winner
+14. Adjust the Player's chips accordingly to bank roll
+15. Ask the Player if they'd like to play again
+16. If so, start again from step 3
 
 Ways for game to end:
 1. Player busts (before computer even has a turn)
 2. Player goes and stay, computer hits until higher than player but under 21
 3. Player goes and stay, computer hits and bust
-
 
 Rules:
 1. Face cards equal 10
@@ -35,7 +38,6 @@ Rules:
 
 """
 
-# Step 1: Imports and Global Variables
 # Import the random module to shuffle the deck prior to dealing.
 import random
 
@@ -49,36 +51,22 @@ values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8,
 # Finally, declare a Boolean value to be used to control while loops.
 playing = True
 
-class Card:
-    """Step 2: Create a Card Class - where each Card object has a suit and a rank
 
-    A Card object really only needs two attributes: suit and rank.
-    In addition to the Card's __init__ method, add a __str__ method that, when
-    asked to print a Card, returns a string in the form "Two of Hearts"
-    """
+class Card:
+    """ A card has a suit and a rank."""
+
     def __init__(self, suit, rank):
         self.suit = suit
         self.rank = rank
 
     def __str__(self):
+        # String in the format "RANK of SUIT"
         return self.rank + ' of ' + self.suit
 
 
 class Deck:
-    """Step 3: Create a Deck Class - - hold all 52 cards and can be shuffled
-    Here we might store 52 card objects in a list that can later be shuffled.
-    First, though, we need to instantiate all 52 unique card objects and add them
-    to our list. So long as the Card class definition appears in our code, we can
-    build Card objects inside our Deck __init__ method.
-    Consider iterating over sequences of suits and ranks to build out each card.
-
-    In addition to an __init__ method we'll want to add methods to shuffle our deck,
-    and to deal out cards during gameplay.
-
-    OPTIONAL: We may never need to print the contents of the deck during gameplay,
-    but having the ability to see the cards inside it may help troubleshoot any
-    problems that occur during development. With this in mind, consider adding a
-    __str__ method to the class definition.
+    """ A deck holds all cards and can be shuffled. All 52 unique card objects
+    need to be initiated and added to a list.
     """
 
     def __init__(self):
@@ -89,7 +77,7 @@ class Deck:
             for rank in ranks:
                 # Build a card for each suit and rank
                 self.deck.append(Card(suit, rank))
-
+        # Shuffle the deck
         self.shuffle()
 
     def __str__(self):
@@ -102,25 +90,22 @@ class Deck:
         return deck_str
 
     def shuffle(self):
+        # Use random to shuffle the deck
         random.shuffle(self.deck)
 
     def deal(self):
+        # Remove the top card from the hand and return
         return self.deck.pop()
 
 
 class Hand:
-    """ Step 4: Create a Hand Class
-    Holds those cards that have been dealt to each player from the deck.
-
-    In addition to holding Card objects dealt from the Deck, the Hand class is
-    used to calculate the value of those cards using the values in the
-    dictionary defined above.
-
-    It may also need to adjust for the value of Aces when appropriate.
+    """ A hand holds the cards that have been dealt to a player from the deck.
+    It also calculates the value of the those cards and adjusts for aces when
+    appropriate.
 
     """
     def __init__(self, deck):
-        self.cards = []  # start with an empty list as we did in the Deck class
+        self.cards = []  # start with an empty list
         self.value = 0  # start with zero value
         self.aces = 0  # add an attribute to keep track of aces
 
@@ -147,35 +132,20 @@ class Hand:
             # Continue to check until there are no aces left in the hand
 
     def __str__(self):
-        hand_str = ''  # start with an empty string
+        # start with an empty string
+        hand_str = ''
+        # start with an empty string
         for card in self.cards:
-            hand_str += '\n  '+ card.__str__() # add each Card object's print string
+            hand_str += '\n  '+ card.__str__()
         return 'hand is:' + hand_str
 
     def hit(self, deck):
-        """ Step 7: Write a function for taking hits
-
-        Either player can take hits until they bust. This function will be called
-        during gameplay anytime a Player requests a hit, or a Dealer's hand is less
-        than 17. It should take in Deck and Hand objects as arguments, and deal one
-        card off the deck and add it to the Hand. You may want it to check for aces
-        in the event that a player's hand exceeds 21.
-        """
         # Add a new card to the hand from the deck
         self.add_card(deck.deal())
         # Check if needs to be adjusted for aces
         self.adjust_for_ace()
 
     def hit_or_stand(self, deck):
-        """ Step 8: Write a function prompting the Player to Hit or Stand
-
-        This function should accept the deck and the player's hand as arguments,
-        and assign playing as a global variable.
-
-        If the Player Hits, employ the hit() function above. If the Player Stands,
-        set the playing variable to False - this will control the behavior of a
-        while loop later on in our code.
-        """
         global playing
         # Ask user if they want to hit (pressing any key returns true)
         # or stand (pressing entering will return false)
@@ -187,13 +157,8 @@ class Hand:
             self.hit(deck)
 
 class Chips:
-    """ Step 5: Create a Chips Class
+    """Keeps track of a Player's starting chips, bets and ongoing winnings."""
 
-    In addition to decks of cards and hands, we need to keep track of a Player's
-    starting chips, bets, and ongoing winnings. This could be done using global
-    variables, but in the spirit of object oriented programming, let's make a Chips
-    class instead!
-    """
     def __init__(self):
         # Ask user for starting chip amount
         self.total = int(input("How many chips do you want to start with? "))
@@ -206,12 +171,6 @@ class Chips:
         self.total -= self.bet
 
     def take_bet(self):
-        """  Step 6: Write a function for taking bets
-
-        Since we're asking the user for an integer value, this would be a good place
-        to use try/except. Remember to check that a Player's bet can be covered by
-        their available chips.
-        """
         while True:
             try:
                 # Ask user for their bet
@@ -229,115 +188,134 @@ class Chips:
                     break
 
 
+class Game:
+    """The game contains the Player's chips and the deck. """
 
-def show_hands(player, dealer):
-    """   Step 9: Write functions to display cards
+    def __init__(self):
+        self.chips = Chips()
+        # Create & shuffle the deck,
+        self.deck = Deck()
+        self.game_round = 1
 
-    When the game starts, and after each time Player takes a card, the dealer's
-    first card is hidden and all of Player's cards are visible.
+    def play_game(self):
+        global playing
+        # A game has started
+        while True:
+            # Initiate a new round and play the round
+            game_round = Round(self)
+            game_round.play_round()
+            # Ask to play again
+            playing = input(
+                "Do you want to play again? Yes (press any key) or No (press Enter)? ")
+            if playing:
+                # Wants to play again
+                self.game_round += 1
+                continue
+            else:
+                # Wants to exit
+                print("Thanks for playing!")
+                break
 
-    At the end of the hand all cards are shown, and you may want to show each
-    hand's total value. Write a function for each of these scenarios.
+
+class Round:
+    """
+    Each game has at least one round. During a round the dealer and player
+    are dealt a hand and they take turns until a winner is found.
     """
 
-    if playing:
-        print("\nDealer's hand is:\n", dealer.cards[0], "\n  <HIDDEN>")
-    else:
-        print("\nDealer's total is", dealer.value, "and", dealer.__str__())
-
-    print("\nPlayer's total is", player.value, "and", player.__str__())
-
-
-def get_the_winner(player, dealer, chips):
-
-    if player.value > 21:
-        # If player's hand exceeds 21, run player_busts() and break out of loop
-        print("--Player busts!--")
-        chips.lose_bet()
-
-    elif dealer.value > 21:
-        # dealer_busts
-        chips.win_bet()
-        print("--Dealer busts, Player wins--")
-
-    elif dealer.value > player.value:
-        # dealer_wins
-        chips.lose_bet()
-        print("--Dealer wins!--")
-
-    elif dealer.value < player.value:
-        chips.win_bet()
-        print("--Player wins!--")
-
-    elif dealer.value == player.value:
-        print("--There has been a tie--")
-
-
-def main():
-    global playing
-    # Print an opening statement
-    print("Let's play some Black Jack!")
-
-    # Set up the Player's chips
-    chips = Chips()
-    game = 1
-
-    while True:
-        # Create & shuffle the deck,
-        deck = Deck()
+    def __init__(self, game):
         # Deal two cards to each player
-        player = Hand(deck)
-        dealer = Hand(deck)
+        self.game = game
+        self.player = Hand(self.game.deck)
+        self.dealer = Hand(self.game.deck)
+
+
+    def show_hands(self):
+        # Check if the player has had their turn
+        if playing:
+            # It's the players turn, so only show one of the dealers card
+            print("\nDealer's hand is:\n", self.dealer.cards[0], "\n  <HIDDEN>")
+        else:
+            # The player has had their turn, show the dealers cards
+            print("\nDealer's total is", self.dealer.value, "and", self.dealer.__str__())
+        # Always show all of the player's cards
+        print("\nPlayer's total is", self.player.value, "and", self.player.__str__())
+
+    def get_the_winner(self):
+        chips = self.game.chips
+        # Compare the player and dealer's values to find the winner
+        if self.player.value > 21:
+            # Player busts, player loses bet
+            print("--Player busts!--")
+            chips.lose_bet()
+
+        elif self.dealer.value > 21:
+            # Dealer_busts, player wins bet
+            chips.win_bet()
+            print("--Dealer busts, Player wins--")
+
+        elif self.dealer.value > self.player.value:
+            # Dealer wins, player loses bet
+            chips.lose_bet()
+            print("--Dealer wins!--")
+
+        elif self.dealer.value < self.player.value:
+            # Player wins, player wins bet
+            chips.win_bet()
+            print("--Player wins!--")
+
+        elif self.dealer.value == self.player.value:
+            # There is a tie
+            print("--There has been a tie--")
+
+    def play_round(self):
         # Prompt the Player for their bet
-        Chips.take_bet(chips)
+        self.game.chips.take_bet()
 
         # Show cards (but keep one dealer card hidden)
         print("-------------------------------------")
-        print("STARTING HANDS! Round (", game, ")")
-        show_hands(player, dealer)
+        print("STARTING HANDS! Round (", self.game.game_round, ")")
+        self.show_hands()
 
         # Player starts
-        count = 1
-        playing = True
+        turn = 1
         while playing:
+            # Continue player's turn until STAND or BUST
             print("-------------------------------------")
-            print("PLAYER'S TURN (", count, ")")
+            print("PLAYER'S TURN (", turn, ")")
             # Prompt for Player to Hit or Stand
-            player.hit_or_stand(deck)
+            self.player.hit_or_stand(self.game.deck)
             # Show cards (but keep one dealer card hidden)
-            show_hands(player, dealer)
-            count += 1
+            self.show_hands()
+            turn += 1
 
             # Check if player has bust
-            if player.value > 21:
+            if self.player.value > 21:
+                # Break out of the loop and go to 'game over'
                 break
 
         # If Player hasn't busted, it is Dealers turn
-        if player.value < 21:
+        if self.player.value < 21:
             # Play Dealer's hand until Dealer reaches 17
-            while dealer.value < 17:
-                dealer.hit(deck)
+            while self.dealer.value < 17:
+                self.dealer.hit(self.game.deck)
 
-        # The game is over
+        # The game is over(Player has bust or dealer has over 17/bust
         print("-------------------------------------")
         print("RESULT\n")
-        # Show all cards
-        get_the_winner(player, dealer, chips)
-        show_hands(player, dealer)
+        # Announce the winner
+        self.get_the_winner()
+        # start with an empty string
+        self.show_hands()
 
         # Inform Player of their chips total
         print("-------------------------------------")
-        print("Your chip total is: ", chips.total)
-
-        # Ask to play again
-        playing = input("Do you want to play again? Yes (press any key) or No (press Enter)? ")
-        if playing:
-            round += 1
-            continue
-        else:
-            print("Thanks for playing!")
-            break
+        print("Your chip total is: ", self.game.chips.total)
 
 
 if __name__ == "__main__":
-    main()
+    # Print an opening statement
+    print("Let's play some Black Jack!")
+    # Create the game and play
+    game = Game()
+    Game.play_game(game)
