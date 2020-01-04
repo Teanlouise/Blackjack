@@ -108,9 +108,10 @@ class Hand:
         self.cards = []  # start with an empty list
         self.value = 0  # start with zero value
         self.aces = 0  # add an attribute to keep track of aces
+        self.deck = deck
 
-        self.add_card(deck.deal())
-        self.add_card(deck.deal())
+        self.add_card(self.deck.deal())
+        self.add_card(self.deck.deal())
 
     def add_card(self, card):
         # Add a card to the hand
@@ -131,21 +132,13 @@ class Hand:
             self.aces -= 1
             # Continue to check until there are no aces left in the hand
 
-    def __str__(self):
-        # start with an empty string
-        hand_str = ''
-        # start with an empty string
-        for card in self.cards:
-            hand_str += '\n  '+ card.__str__()
-        return 'hand is:' + hand_str
-
-    def hit(self, deck):
+    def hit(self):
         # Add a new card to the hand from the deck
-        self.add_card(deck.deal())
+        self.add_card(self.deck.deal())
         # Check if needs to be adjusted for aces
         self.adjust_for_ace()
 
-    def hit_or_stand(self, deck):
+    def hit_or_stand(self, round):
         global playing
         # Ask user if they want to hit (pressing any key returns true)
         # or stand (pressing entering will return false)
@@ -154,7 +147,19 @@ class Hand:
 
         if playing:
             # User wants to hit
-            self.hit(deck)
+            self.hit()
+            if self.value <= 21:
+                # Show cards (but keep one dealer card hidden)
+                round.show_hands()
+
+    def __str__(self):
+        # start with an empty string
+        hand_str = ''
+        # start with an empty string
+        for card in self.cards:
+            hand_str += '\n  '+ card.__str__()
+        return 'hand is:' + hand_str
+
 
 class Chips:
     """Keeps track of a Player's starting chips, bets and ongoing winnings."""
@@ -187,6 +192,12 @@ class Chips:
                     # Bet amount has been set successfully
                     break
 
+    def check_balance(self):
+        balance = True
+        if self.total <= 0:
+            balance = False
+            print("Sorry you don't have an chips left!")
+        return balance
 
 class Game:
     """The game contains the Player's chips and the deck. """
@@ -204,13 +215,17 @@ class Game:
             # Initiate a new round and play the round
             game_round = Round(self)
             game_round.play_round()
+
             # Ask to play again
             playing = input(
                 "Do you want to play again? Yes (press any key) or No (press Enter)? ")
-            if playing:
-                # Wants to play again
+            balance = self.chips.check_balance()
+
+            if playing and balance:
+                # Wants to play again and has a balance
                 self.game_round += 1
                 continue
+
             else:
                 # Wants to exit
                 print("Thanks for playing!")
@@ -218,8 +233,7 @@ class Game:
 
 
 class Round:
-    """
-    Each game has at least one round. During a round the dealer and player
+    """ Each game has at least one round. During a round the dealer and player
     are dealt a hand and they take turns until a winner is found.
     """
 
@@ -229,8 +243,8 @@ class Round:
         self.player = Hand(self.game.deck)
         self.dealer = Hand(self.game.deck)
 
-
     def show_hands(self):
+        global playing
         # Check if the player has had their turn
         if playing:
             # It's the players turn, so only show one of the dealers card
@@ -269,48 +283,44 @@ class Round:
             print("--There has been a tie--")
 
     def play_round(self):
+        global playing
+        print("--------------------------- ROUND", self.game.game_round, "---------------------------")
         # Prompt the Player for their bet
         self.game.chips.take_bet()
 
         # Show cards (but keep one dealer card hidden)
-        print("-------------------------------------")
-        print("STARTING HANDS! Round (", self.game.game_round, ")")
+        print("\n___STARTING HANDS!___")
         self.show_hands()
 
         # Player starts
         turn = 1
         while playing:
             # Continue player's turn until STAND or BUST
-            print("-------------------------------------")
-            print("PLAYER'S TURN (", turn, ")")
+            print("\n___PLAYER'S TURN (", turn, ")___")
             # Prompt for Player to Hit or Stand
-            self.player.hit_or_stand(self.game.deck)
-            # Show cards (but keep one dealer card hidden)
-            self.show_hands()
+            self.player.hit_or_stand(self)
             turn += 1
 
             # Check if player has bust
             if self.player.value > 21:
                 # Break out of the loop and go to 'game over'
-                break
+                playing = False
 
         # If Player hasn't busted, it is Dealers turn
         if self.player.value < 21:
             # Play Dealer's hand until Dealer reaches 17
             while self.dealer.value < 17:
-                self.dealer.hit(self.game.deck)
+                self.dealer.hit()
 
         # The game is over(Player has bust or dealer has over 17/bust
-        print("-------------------------------------")
-        print("RESULT\n")
+        print("\n___RESULT___\n")
         # Announce the winner
         self.get_the_winner()
         # start with an empty string
         self.show_hands()
 
         # Inform Player of their chips total
-        print("-------------------------------------")
-        print("Your chip total is: ", self.game.chips.total)
+        print("\n\nYour chip total is: ", self.game.chips.total)
 
 
 if __name__ == "__main__":
