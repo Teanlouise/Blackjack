@@ -50,6 +50,8 @@ class Round:
             print("--There has been a tie--")
 
     def play_round(self):
+        self.player.setup()
+        self.dealer.setup()
         print("--------------------------- ROUND", self.game.game_round, "---------------------------")
         # Prompt the Player for their bet
         self.game.chips.take_bet()

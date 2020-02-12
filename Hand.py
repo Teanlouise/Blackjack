@@ -13,6 +13,8 @@ class Hand:
         self.game = round.game
         self.deck = self.game.deck
 
+    def setup(self):
+        # Add two cards to each players hand
         self.add_card(self.deck.deal())
         self.add_card(self.deck.deal())
 
