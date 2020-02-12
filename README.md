@@ -4,8 +4,10 @@
 
 A simple blackjack game. This was completed as the milestone 2 project for Jose Portilla's "Zero-to-Hero Python" course. Basic Python functionality inlcuding Object-Oriented programming practices were used to implement this project.
 
-The project contains five class: Chips(), Hand(), Deck(), Game(), Round() 
+Pytest was used to write a number of tests and automatic testing has been setup with Travis CI.
 
+![blackjack_travis](https://user-images.githubusercontent.com/19520346/74307933-922a8900-4db2-11ea-9c67-bccd58586bd7.PNG)
+ 
 **Gameplay:**
 1. Create a bank roll according to user to be used for all subsequent games
 2. Start the first round
