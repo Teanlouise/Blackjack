@@ -4,8 +4,23 @@
 
 A simple blackjack game. This was completed as the milestone 2 project for Jose Portilla's "Zero-to-Hero Python" course. Basic Python functionality inlcuding Object-Oriented programming practices were used to implement this project.
 
-The project contains five class: Chips(), Hand(), Deck(), Game(), Round() 
+Pytest was used to write a number of tests and automatic testing has been setup with Travis CI.
 
+![blackjack_travis](https://user-images.githubusercontent.com/19520346/74307933-922a8900-4db2-11ea-9c67-bccd58586bd7.PNG)
+
+**Setup Travis CI:**
+1. Create branch
+`git checkout -b travis_setup`
+2. Add .travis.yml file
+3. Specify language
+`language: python`
+4. Must provide a script
+`script: pytest`
+5. No requirement.txt so need to override install
+`install: pip --version`
+6. Create test_name.py file with tests
+7. Commit
+ 
 **Gameplay:**
 1. Create a bank roll according to user to be used for all subsequent games
 2. Start the first round
@@ -23,7 +38,6 @@ The project contains five class: Chips(), Hand(), Deck(), Game(), Round()
 14. Adjust the Player's chips accordingly to bank roll
 15. Ask the Player if they'd like to play again
 16. If so, start again from step 3
-
 
 _The game starts with an introduction and prompt for how many chips to start with_
 _(1) Dealer wins since they have a higher value than the player, lose the bet._
